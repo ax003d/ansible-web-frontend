@@ -1,0 +1,4 @@
+---
+frontend_letsencrypt_live_root: /etc/letsencrypt/live
+frontend_nginx_default_root: /usr/share/nginx/html
+frontend_certbot_webroot: "{{ frontend_nginx_default_root }}"

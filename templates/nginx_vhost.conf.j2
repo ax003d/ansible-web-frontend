@@ -1,0 +1,73 @@
+upstream {{ frontend_upstream.name }} {
+  # fail_timeout=0 means we always retry an upstream even if it failed
+  # to return a good HTTP response (in case the Unicorn master nukes a
+  # single worker for timing out).
+
+  server unix:{{ frontend_upstream.socket_path }} fail_timeout=0;
+}
+
+{% if frontend_domain_name %}
+server {
+    listen 80 default_server;
+
+    {% if frontend_ssl.enabled %}
+    listen 443 default_server;
+    {% endif %}
+
+    server_name _;
+    return 444;
+}
+{% endif %}
+
+server {
+    listen 80{% if not frontend_domain_name %} default_server{% endif %};
+
+    {% if frontend_ssl.enabled %}
+    listen 443 ssl{% if not frontend_domain_name %} default_server{% endif %};
+    {% endif %}
+
+    server_name {% if domain_name %}{{ domain_name }}{% else %}_{% endif %};
+
+    {% if frontend_ssl.enabled %}
+    {% if frontend_ssl.certbot.active %}
+    ssl_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/fullchain.pem
+    ssl_certificate_key {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/privkey.pem
+    {% else %}
+    ssl_certificate {{ frontend_ssl.certificate_path }};
+    ssl_certificate_key {{ frontend_ssl.key_path }};
+    {% endif %}
+    {% endif %}
+
+    client_max_body_size 4M;
+
+    access_log {{ frontend_log.access }};
+    error_log {{ frontend_log.error }};
+
+    {% for loc in frontend_static_locations %}
+    location {{ loc.url_path }} {
+        alias {{ loc.filesystem_alias }};
+    }
+    {% endfor %}
+
+    location / {
+        proxy_pass http://{{ frontend_upstream.name }};
+
+        add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+
+        {% if frontend_ssl.enabled %}
+        proxy_set_header X-Forwarded-Protocol $scheme;
+        {% endif %}
+
+        proxy_set_header Host $http_host;
+        proxy_redirect off;
+    }
+
+    # Server-level error pages
+
+    error_page 500 502 503 504 /{{ frontend_50x_html_path|basename }};
+
+    location = /{{ frontend_50x_html_path|basename }} {
+        root {{ frontend_50x_html_path|dirname }};
+    }
+}

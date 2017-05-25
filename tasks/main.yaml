@@ -1,14 +1,17 @@
 ---
 
 - name: add certbot ppa
+  when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   apt_repository: repo='ppa:certbot/certbot'
   become: true
 
-- name: install certbot, nginx
-  apt: name={{ item }} state=present
-  with_items:
-    - nginx
-    - certbot
+- name: install certbot
+  when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
+  apt: name=certbot state=present
+  become: true
+
+- name: install nginx
+  apt: name=nginx state=present
   become: true
 
 - name: enable default nginx vhost

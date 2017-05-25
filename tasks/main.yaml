@@ -3,16 +3,13 @@
 - name: add certbot ppa
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   apt_repository: repo='ppa:certbot/certbot'
-  become: true
 
 - name: install certbot
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   apt: name=certbot state=present
-  become: true
 
 - name: install nginx
   apt: name=nginx state=present
-  become: true
 
 - name: enable default nginx vhost
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
@@ -20,12 +17,10 @@
     src=/etc/nginx/sites-available/default
     dest=/etc/nginx/sites-enabled/default
     state=link
-  become: true
 
 - name: start nginx
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   service: name=nginx state=restarted
-  become: true
 
 - name: set up ssl cert
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
@@ -34,34 +29,28 @@
     -w {{ frontend_certbot_webroot }}
     -d {{ frontend_domain_name }}
     --email {{ frontend_ssl.certbot.email }}
-  become: true
 
 
 
 - name: disable default nginx vhost
   file: path=/etc/nginx/sites-enabled/default state=absent
-  become: true
 
 - name: configure nginx
   template:
     src=templates/nginx.conf.j2
     dest=/etc/nginx/conf.d/nginx.conf
-  become: true
 
 - name: create our nginx vhost
   template:
     src=templates/nginx_vhost.conf.j2
     dest=/etc/nginx/sites-available/{{ frontend_domain_name }}
-  become: true
 
 - name: symlink our nginx vhost
   file:
     src=/etc/nginx/sites-available/{{ frontend_domain_name }}
     dest=/etc/nginx/sites-enabled/{{ frontend_domain_name }} state=link
-  become: true
   notify:
     - restart nginx
 
 - name: enable nginx
   service: name=nginx state=started enabled=yes
-  become: true

@@ -30,8 +30,8 @@ server {
 
     {% if frontend_ssl.enabled %}
     {% if frontend_ssl.certbot.active %}
-    ssl_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/fullchain.pem
-    ssl_certificate_key {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/privkey.pem
+    ssl_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/fullchain.pem;
+    ssl_certificate_key {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/privkey.pem;
     {% else %}
     ssl_certificate {{ frontend_ssl.certificate_path }};
     ssl_certificate_key {{ frontend_ssl.key_path }};

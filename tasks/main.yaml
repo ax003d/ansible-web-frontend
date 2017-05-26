@@ -43,12 +43,12 @@
 - name: create our nginx vhost
   template:
     src=templates/nginx_vhost.conf.j2
-    dest=/etc/nginx/sites-available/{{ frontend_domain_name }}
+    dest=/etc/nginx/sites-available/{{ frontend_domain_name|default("site") }}
 
 - name: symlink our nginx vhost
   file:
-    src=/etc/nginx/sites-available/{{ frontend_domain_name }}
-    dest=/etc/nginx/sites-enabled/{{ frontend_domain_name }} state=link
+    src=/etc/nginx/sites-available/{{ frontend_domain_name|default("site") }}
+    dest=/etc/nginx/sites-enabled/{{ frontend_domain_name|default("site") }} state=link
   notify:
     - restart nginx
 

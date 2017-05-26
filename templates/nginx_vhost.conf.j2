@@ -45,7 +45,7 @@ server {
 
     {% for loc in frontend_static_locations %}
     location {{ loc.url_path }} {
-        {% if loc.internal is defined and loc.internal is True %}
+        {% if loc.internal is defined and loc.internal %}
         internal;
         {% endif %}
         alias {{ loc.filesystem_alias }};

@@ -13,7 +13,7 @@ server {
     listen 443 ssl{% if not frontend_domain_name %} default_server{% endif %};
     {% endif %}
 
-    server_name {% if domain_name %}{{ domain_name }}{% else %}_{% endif %};
+    server_name {% if frontend_domain_name %}{{ frontend_domain_name }}{% else %}_{% endif %};
 
     {% if frontend_ssl.enabled %}
     {% if frontend_ssl.certbot.active %}

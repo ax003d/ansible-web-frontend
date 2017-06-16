@@ -34,7 +34,7 @@ server {
 
     server_name {% if frontend_domain_name %}{{ frontend_domain_name }}{% else %}_{% endif %};
 
-    client_max_body_size 4M;
+    client_max_body_size 25M;
 
     access_log {{ frontend_log.access }};
     error_log {{ frontend_log.error }};

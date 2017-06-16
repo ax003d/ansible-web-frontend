@@ -53,6 +53,11 @@ server {
         proxy_redirect off;
 
         add_header P3P 'CP="ALL DSP COR PSAa PSDa OUR NOR ONL UNI COM NAV"';
+        add_header X-Content-Type-Options nosniff;
+        add_header X-Frame-Options SAMEORIGIN;
+        add_header X-XSS-Protection "1; mode=block";
+        add_header Content-Security-Policy "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'";
+
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 
         {% if frontend_ssl.enabled %}

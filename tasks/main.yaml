@@ -20,7 +20,10 @@
 
 - name: start nginx
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
-  service: name=nginx state=restarted
+  service:
+    name: nginx
+    state: restarted
+    use: service
 
 - name: set up ssl cert
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
@@ -53,4 +56,8 @@
     - restart nginx
 
 - name: enable nginx
-  service: name=nginx state=started enabled=yes
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+    use: service

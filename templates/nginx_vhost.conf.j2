@@ -56,7 +56,10 @@ server {
         add_header X-Content-Type-Options nosniff;
         add_header X-Frame-Options SAMEORIGIN;
         add_header X-XSS-Protection "1; mode=block";
-        add_header Content-Security-Policy "default-src https: 'unsafe-eval' 'unsafe-inline'; object-src 'none'";
+
+        {% if frontend_csp is defined %}
+        add_header Content-Security-Policy "{{ frontend_csp }}";
+        {% endif %}
 
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
 

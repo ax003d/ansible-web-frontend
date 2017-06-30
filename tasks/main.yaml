@@ -43,10 +43,16 @@
     -d {{ frontend_domain_name }}
     --email {{ frontend_ssl.certbot.email }}
 
+- name: ssl • self-sign a cert for requests w/bad Host header • ensure root dir
+  when: frontend_ssl.enabled|bool and frontend_domain_name
+  file:
+    path: "{{ frontend_selfsigned_ssl_root }}"
+    state: directory
+
 - name: ssl • self-sign a cert for requests w/bad Host header
   when: frontend_ssl.enabled|bool and frontend_domain_name
   command: >
-    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    openssl req -x509 -nodes -days 365 -newkey rsa:2048
     -keyout "{{ frontend_selfsigned_ssl.key_path }}"
     -out "{{ frontend_selfsigned_ssl.certificate_path }}"
 

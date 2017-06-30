@@ -11,14 +11,24 @@
 - name: install nginx
   apt: name=nginx state=present
 
-- name: enable default nginx vhost
+- name: configure nginx
+  template:
+    src=templates/nginx.conf.j2
+    dest=/etc/nginx/conf.d/nginx.conf
+
+
+- name: ssl • fetch certbot cert • enable default nginx vhost
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   file:
     src=/etc/nginx/sites-available/default
     dest=/etc/nginx/sites-enabled/default
     state=link
 
-- name: start nginx
+- name: ssl • fetch certbot cert • disable our nginx vhost
+  when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
+  file: path=/etc/nginx/sites-enabled/{{ frontend_config_name }} state=absent
+
+- name: ssl • fetch certbot cert • (re)start nginx
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   service:
     name: nginx
@@ -33,7 +43,7 @@
     -d {{ frontend_domain_name }}
     --email {{ frontend_ssl.certbot.email }}
 
-- name: ssl • generate self-signed cert for requests w/bad Host header
+- name: ssl • self-sign a cert for requests w/bad Host header
   when: frontend_ssl.enabled|bool and frontend_domain_name
   command: >
     sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048
@@ -41,14 +51,8 @@
     -out "{{ frontend_selfsigned_ssl.certificate_path }}"
 
 
-
 - name: disable default nginx vhost
   file: path=/etc/nginx/sites-enabled/default state=absent
-
-- name: configure nginx
-  template:
-    src=templates/nginx.conf.j2
-    dest=/etc/nginx/conf.d/nginx.conf
 
 - name: create our nginx vhost
   template:

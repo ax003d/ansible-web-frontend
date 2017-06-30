@@ -15,7 +15,7 @@ server {
 }
 {% if frontend_ssl.enabled %}
 server {
-    listen 443 default_server;
+    listen 443;
     ssl_certificate {{ frontend_selfsigned_ssl.certificate_path }};
     ssl_certificate_key {{ frontend_selfsigned_ssl.key_path }};
     server_name _;

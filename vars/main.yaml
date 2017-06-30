@@ -2,3 +2,8 @@
 frontend_letsencrypt_live_root: /etc/letsencrypt/live
 frontend_nginx_default_root: /var/www/html
 frontend_certbot_webroot: "{{ frontend_nginx_default_root }}"
+
+frontend_selfsigned_ssl_root: /etc/nginx/ssl
+frontend_selfsigned_ssl:
+    certificate_path: "{{ frontend_selfsigned_ssl_root }}/self.crt"
+    key_path: "{{ frontend_selfsigned_ssl_root }}/self.key"

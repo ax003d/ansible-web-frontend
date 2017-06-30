@@ -25,13 +25,20 @@
     state: restarted
     use: service
 
-- name: set up ssl cert
+- name: ssl • fetch certbot cert
   when: frontend_ssl.certbot.active|bool and frontend_ssl.enabled|bool
   command: >
     certbot certonly --non-interactive --agree-tos --webroot
     -w {{ frontend_certbot_webroot }}
     -d {{ frontend_domain_name }}
     --email {{ frontend_ssl.certbot.email }}
+
+- name: ssl • generate self-signed cert for requests w/bad Host header
+  when: frontend_ssl.enabled|bool and frontend_domain_name
+  command: >
+    sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    -keyout "{{ frontend_selfsigned_ssl.key_path }}"
+    -out "{{ frontend_selfsigned_ssl.certificate_path }}"
 
 
 
@@ -54,6 +61,9 @@
     dest=/etc/nginx/sites-enabled/{{ frontend_config_name }} state=link
   notify:
     - restart nginx
+
+- name: check nginx config
+  command: nginx -t
 
 - name: enable nginx
   service:

@@ -52,7 +52,9 @@
 - name: ssl • self-sign a cert for requests w/bad Host header
   when: frontend_ssl.enabled|bool and frontend_domain_name
   command: >
-    openssl req -x509 -nodes -days 365 -newkey rsa:2048
+    openssl req
+    -x509 -nodes -days 365 -newkey rsa:2048
+    -subj '/CN=localhost'
     -keyout "{{ frontend_selfsigned_ssl.key_path }}"
     -out "{{ frontend_selfsigned_ssl.certificate_path }}"
 

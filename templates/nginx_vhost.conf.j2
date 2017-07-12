@@ -65,13 +65,20 @@ server {
 
     {% for loc in frontend_static_locations %}
     location {{ loc.url_path }} {
+        alias {{ loc.filesystem_alias }};
+
         {% if loc.internal is defined and loc.internal %}
         internal;
         {% endif %}
-        {% if loc.cache_expires is defined %}
-        expires {{ loc.cache_expires }};
+
+        {% if loc.cache is defined %}
+        add_header Pragma public;
+        add_header Cache-Control "public";
+        {% if loc.cache == "forever" %}
+        expires max;
+        {% elif loc.cache == "never" %}
+        expires epoch;
         {% endif %}
-        alias {{ loc.filesystem_alias }};
     }
     {% endfor %}
 

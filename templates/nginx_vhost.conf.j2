@@ -68,6 +68,9 @@ server {
         {% if loc.internal is defined and loc.internal %}
         internal;
         {% endif %}
+        {% if loc.cache_expires is defined %}
+        expires {{ loc.cache_expires }};
+        {% endif %}
         alias {{ loc.filesystem_alias }};
     }
     {% endfor %}

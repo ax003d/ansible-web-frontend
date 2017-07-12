@@ -79,6 +79,7 @@ server {
         {% elif loc.cache == "never" %}
         expires epoch;
         {% endif %}
+        {% endif %}
     }
     {% endfor %}
 

@@ -40,7 +40,7 @@
   command: >
     certbot certonly --non-interactive --agree-tos --webroot
     -w {{ frontend_certbot_webroot }}
-    -d {{ frontend_domain_name }}
+    -d {{ frontend_ssl.domain }}
     --email {{ frontend_ssl.certbot.email }}
 
 - name: ssl • self-sign fallback cert • ensure root dir

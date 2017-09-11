@@ -6,7 +6,7 @@ upstream {{ frontend_upstream.name }} {
   server unix:{{ frontend_upstream.socket_path }} fail_timeout=0;
 }
 
-{% if frontend_domain_name %}
+{% if frontend_whitelisted_hosts %}
 server {
     listen 80 default_server;
     server_name _;
@@ -26,10 +26,10 @@ server {
 {% endif %}
 
 server {
-    listen 80{% if not frontend_domain_name %} default_server{% endif %} deferred;
+    listen 80{% if not frontend_whitelisted_hosts %} default_server{% endif %} deferred;
 
     {% if frontend_ssl.enabled %}
-    listen 443 ssl{% if not frontend_domain_name %} default_server{% endif %} deferred;
+    listen 443 ssl{% if not frontend_whitelisted_hosts %} default_server{% endif %} deferred;
 
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 5m;
@@ -43,9 +43,9 @@ server {
     {% endif %}
 
     {% if frontend_ssl.certbot.active %}
-    ssl_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/fullchain.pem;
-    ssl_certificate_key {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/privkey.pem;
-    ssl_trusted_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_domain_name }}/chain.pem;
+    ssl_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_ssl.domain }}/fullchain.pem;
+    ssl_certificate_key {{ frontend_letsencrypt_live_root }}/{{ frontend_ssl.domain }}/privkey.pem;
+    ssl_trusted_certificate {{ frontend_letsencrypt_live_root }}/{{ frontend_ssl.domain }}/chain.pem;
     {% elif frontend_ssl.certificate_path is defined %}
     ssl_certificate {{ frontend_ssl.certificate_path }};
     ssl_certificate_key {{ frontend_ssl.key_path }};
@@ -56,7 +56,7 @@ server {
     {% endif %}
     {% endif %}
 
-    server_name {% if frontend_domain_name %}{{ frontend_domain_name }}{% else %}_{% endif %};
+    server_name {% if frontend_whitelisted_hosts %}{{ frontend_whitelisted_hosts }}{% else %}_{% endif %};
 
     client_max_body_size 25M;
 

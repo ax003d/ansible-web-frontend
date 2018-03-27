@@ -116,6 +116,6 @@ server {
     }
 
     {% if frontend_custom_host_configuration is defined %}
-    {{ custom_rules }}
+    {{ frontend_custom_host_configuration }}
     {% endif %}
 }

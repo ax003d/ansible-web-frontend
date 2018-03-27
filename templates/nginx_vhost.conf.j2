@@ -114,4 +114,8 @@ server {
     location = /{{ frontend_50x_html_path|basename }} {
         root {{ frontend_50x_html_path|dirname }};
     }
+
+    {% if frontend_custom_host_configuration is defined %}
+    {{ custom_rules }}
+    {% endif %}
 }

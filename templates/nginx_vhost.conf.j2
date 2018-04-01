@@ -3,7 +3,7 @@ upstream {{ frontend_upstream.name }} {
   # to return a good HTTP response (in case the Unicorn master nukes a
   # single worker for timing out).
 
-  server unix:{{ frontend_upstream.socket_path }} fail_timeout=0;
+  server {{ frontend_upstream.binding }} fail_timeout=0;
 }
 
 {% if frontend_whitelisted_hosts %}

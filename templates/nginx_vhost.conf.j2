@@ -32,6 +32,7 @@ server {
     gzip on;
     gzip_min_length 1000;
     gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript;
+    gzip_vary on;
     {% endif %}
 
     {% if frontend_ssl.enabled %}

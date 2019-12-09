@@ -28,14 +28,14 @@ server {
 server {
     listen 80{% if not frontend_whitelisted_hosts %} default_server{% endif %} deferred;
 
-    {% if frontend_ssl.enabled %}
-    listen 443 ssl{% if not frontend_whitelisted_hosts %} default_server{% endif %} deferred;
-
     {% if frontend_gzip.enabled %}
     gzip on;
     gzip_min_length 1000;
     gzip_types text/plain application/javascript application/x-javascript text/css application/xml text/javascript;
     {% endif %}
+
+    {% if frontend_ssl.enabled %}
+    listen 443 ssl{% if not frontend_whitelisted_hosts %} default_server{% endif %} deferred;
 
     ssl_session_cache shared:SSL:10m;
     ssl_session_timeout 5m;

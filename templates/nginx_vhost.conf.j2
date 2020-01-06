@@ -87,6 +87,8 @@ server {
         expires epoch;
         {% endif %}
         {% endif %}
+
+        add_header 'Access-Control-Allow-Origin' '*';
     }
     {% endfor %}
 
